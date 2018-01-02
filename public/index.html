@@ -7,5 +7,20 @@
 <body>
 	<p>Welcome to the chat app
 	</p>
+	<script type="text/javascript" src="/socket.io/socket.io.js">
+		//src is where all the js code is(it's not the lib)
+	</script>
+	<script type="text/javascript">
+		//it will run right after the above code
+		var socket=io();//available from the above js code and not from the server and this is making a request to open a web socket for the client and keep the connection open
+		socket.on('connect',()=>{
+			console.log('Connected to the server');
+		});
+
+		socket.on('disconnect',()=> {
+			console.log('disconnected from the server');
+		});
+	</script>
+
 </body>
 </html>
