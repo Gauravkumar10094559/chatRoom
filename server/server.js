@@ -7,15 +7,59 @@ const publicPath=path.join(__dirname,'../public');
 var server=http.createServer(app);//app.listen is using the same createServer behind the scene
 var io=socketIO(server);//this is our web socket server 
 app.use(express.static(publicPath));
-//server is same as in index.html
-io.on('connection',(socket)=>{//on is for differenct events and connections is used to register a new connections
+
+
+
+
+
+io.on('connection',(socket)=> {
 	console.log('a new user connected');
 
-	socket.on('disconnect',()=> {
+	socket.on('disconnect',()=>{
 		console.log('client was disconnected');
 	});
 
+	socket.emit('newMessage',{
+		from:"gk@gk.com",
+		text:"holla there ",
+		createdAt:Date.now()
+	});
+
+	socket.on('createMessage',(msg)=> {
+		console.log("Message from the user",msg);
+	})
 });
+
+
+
+
+
+
+
+
+
+
+
+//socket is same as in index.html
+// io.on('connection',(socket)=>{//on is for differenct events and connections is used to register a new connections
+// 	console.log('a new user connected');
+
+// 	socket.on('disconnect',()=> {
+// 		console.log('client was disconnected');
+// 	});
+
+// 	socket.emit('newEmail',{
+// 		from:'gk@gk.com',
+// 		text:'hey there',
+// 		createAt:123
+// 	});
+
+// 	socket.on('createEmail',(newEmail)=>{
+// 		console.log('Create Email',newEmail);
+// 	});
+
+
+// });
 
 
 const port=process.env.PORT||3000;
