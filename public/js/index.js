@@ -4,10 +4,10 @@ var socket=io();
 
 socket.on('connect',function() {
 	console.log("Connected to the server");
-	socket.emit('createMessage',{
-		from:'aj@aj.com',
-		text:'not so hoola'
-	});
+	// socket.emit('createMessage',{
+	// 	from:'aj@aj.com',
+	// 	text:'not so hoola'
+	// });
 });
 
 socket.on('disconnect',function() {

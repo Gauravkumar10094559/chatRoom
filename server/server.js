@@ -12,22 +12,27 @@ app.use(express.static(publicPath));
 
 
 
-io.on('connection',(socket)=> {
+io.on('connection',(socket)=> {	//for all connections
 	console.log('a new user connected');
 
 	socket.on('disconnect',()=>{
 		console.log('client was disconnected');
 	});
 
-	socket.emit('newMessage',{
-		from:"gk@gk.com",
-		text:"holla there ",
-		createdAt:Date.now()
-	});
+	// socket.emit('newMessage',{
+	// 	from:"gk@gk.com",
+	// 	text:"holla there ",
+	// 	createdAt:Date.now()
+	// });
 
 	socket.on('createMessage',(msg)=> {
 		console.log("Message from the user",msg);
-	})
+		io.emit('newMessage',{ //for all connections
+			from:msg.from,
+			text:msg.text,
+			createdAt:new Date().getTime()
+		});
+	});
 });
 
 
