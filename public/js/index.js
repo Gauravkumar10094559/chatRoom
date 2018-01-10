@@ -18,6 +18,30 @@ socket.on('newMessage',function(newMessage) {
 	console.log('The new Message is:',newMessage);
 });
 
+socket.on('newMessage',function(message) {
+	console.log('newMessage',message);
+	var li=$('<li></li>');
+	li.text(`${message.from}:${message.text}`);
+	$('#messages').append(li);
+})
+
+// socket.emit('createMessage',{
+// 	from:'your daddaa',
+// 	text:'top of the'
+// },function (data) {
+// 	console.log(data);
+// });
+
+
+$('#message-form').on('submit',(e)=> {
+	e.preventDefault();
+	socket.emit('createMessage',{
+		from:"user",
+		text:$('[name=msg]').val()
+	},()=>{
+
+	})
+})
 
 
 		//it will run right after the above code
