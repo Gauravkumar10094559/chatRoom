@@ -7,7 +7,7 @@ const publicPath=path.join(__dirname,'../public');
 var server=http.createServer(app);//app.listen is using the same createServer behind the scene
 var io=socketIO(server);//this is our web socket server 
 app.use(express.static(publicPath));
-var {generateMsg}=require('./utils/message');
+var {generateMsg,generateLocationMsg}=require('./utils/message');
 
 io.on('connection',(socket)=> {	//for all connections
 	console.log('a new user connected');
@@ -44,6 +44,13 @@ io.on('connection',(socket)=> {	//for all connections
 		// 	createdAt:new Date().getTime()
 		// });//difference is who it is sent to (everyone but this socket)
 	});
+
+	socket.on('createLocationMessage',(coords)=> {
+		io.emit('newLocationMessage',generateLocationMsg('Admin',coords.latitude,coords.longitude));
+	})
+
+
+
 });
 
 
