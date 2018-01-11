@@ -61,9 +61,12 @@ io.on('connection',(socket)=> {	//for all connections
 	})
 
 	socket.on('createMessage',(msg,callback)=> {
-		console.log("Message from the user",msg);
-		
-		io.emit('newMessage',generateMsg(msg.from,msg.text));
+
+		var user=users.getUser(socket.id);
+
+		if(user && isRealString(msg.text)) {
+			io.to(user.room).emit('newMessage',generateMsg(user.name,msg.text));
+		}
 		callback('Got it from the server');
 		// io.emit('newMessage',{ //for all connections (use io)
 		// 	from:msg.from,
@@ -80,7 +83,11 @@ io.on('connection',(socket)=> {	//for all connections
 	});
 
 	socket.on('createLocationMessage',(coords)=> {
-		io.emit('newLocationMessage',generateLocationMsg('Admin',coords.latitude,coords.longitude));
+		var user=users.getUser(socket.id);
+
+		if(user) {
+			io.to(user.room).emit('newLocationMessage',generateLocationMsg(user.name,coords.latitude,coords.longitude));
+		}
 	})
 
 
