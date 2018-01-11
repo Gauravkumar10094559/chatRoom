@@ -8,23 +8,57 @@ var server=http.createServer(app);//app.listen is using the same createServer be
 var io=socketIO(server);//this is our web socket server 
 app.use(express.static(publicPath));
 var {generateMsg,generateLocationMsg}=require('./utils/message');
+var {isRealString} = require('./utils/validation');
+const {Users} = require('./utils/users');
+
+var users=new Users();
 
 io.on('connection',(socket)=> {	//for all connections
 	console.log('a new user connected');
 
 	socket.on('disconnect',()=>{
-		console.log('client was disconnected');
+		// console.log('client was disconnected');
+		var user=users.removeUser(socket.id);
+		if(user) {
+			io.to(user.room).emit('updateUserList',users.getUserList(user.room));
+			io.to(user.room).emit('newMessage',generateMsg('Admin',`${user.name} has left.`))
+		}
+
 	});
-
-	socket.emit('newMessage',generateMsg('Admin','WElcome to the chat app'));
-
 	// socket.emit('newMessage',{
 	// 	from:"admin",
 	// 	text:"this is the admin byotch",
 	// 	createdAt:new Date().getTime()
 	// });
+	// socket.emit('newMessage',generateMsg('Admin','WElcome to the chat app'));
+	// socket.broadcast.emit('newMessage',generateMsg('Admin','A new user joined'));
 
-	socket.broadcast.emit('newMessage',generateMsg('Admin','A new user joined'));
+
+	socket.on('join',(params,callback)=>{
+		if(!isRealString(params.name) || !isRealString(params.room)) {
+			return callback('Name and Room are required');
+		}
+
+		socket.join(params.room);
+		//remove the user from any other room
+		users.removeUser(socket.id);
+		users.addUser(socket.id,params.name,params.room);~
+
+		io.to(params.room).emit('updateUserList',users.getUserList(params.room));
+
+
+
+		//socket.leave('The office fans');
+
+		// io.emit==> io.to('the office fans').emit
+		//sockete.broadcast.emit ==> socket.broadcast.to().emit
+		//socket.emit===< no need
+		socket.emit('newMessage',generateMsg('Admin','WELCOME HERE NEW USER'));
+		socket.broadcast.to(params.room).emit('newMessage',generateMsg('Admin',`${params.name} has joined`));
+	
+
+		callback();
+	})
 
 	socket.on('createMessage',(msg,callback)=> {
 		console.log("Message from the user",msg);
